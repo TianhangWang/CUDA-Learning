@@ -25,10 +25,10 @@
 # Chapter 4
 
 1. p44; 这里主要将之前在 `VectorAddition_block.cu` 代码中的关键字 `blockIdx` 进行了更为深刻的理解; 
-    a. 为什么 `blockIdx` 不需要定义，就可以使用？
-        i. 因为这是 CUDA builit-in 变量，在运行时 CUDA 会给我们定义的;
-    b. 为什么有时候 `blockIdx.x` 有 `.x`?
-        i. 因为 cuda 原始是为了方便图像处理或者矩阵计算，而图像索引自然有(x,y)两维; 在我们的问题中，使用一维的 x 就已经足够，所以`.x` 并不奇怪，甚至可以统一换为 `.y`;
+    1. 为什么 `blockIdx` 不需要定义，就可以使用？
+        1. 因为这是 CUDA builit-in 变量，在运行时 CUDA 会给我们定义的;
+    2. 为什么有时候 `blockIdx.x` 有 `.x`?
+        1. 因为 cuda 原始是为了方便图像处理或者矩阵计算，而图像索引自然有(x,y)两维; 在我们的问题中，使用一维的 x 就已经足够，所以`.x` 并不奇怪，甚至可以统一换为 `.y`;
 
 2. p47; JULIA SET 代码; 详情见源码; 这里注意的是，在 CPU 调用模式下，耗时为 132686 us; 而采用 GPU 加速之后，耗时为 27.4 us; 这样带来的性能提升可达到 4842 倍！
     <p align="center">
@@ -54,13 +54,44 @@
 
 6. p71; 对于二维的 block 划分，二维 threads 块的划分，索引的部分依旧是一样的，无非是在GPU上由`threadIdx` 和 `blockIdx` 构成的索引要能够和**输入的数据**索引形成**唯一的一一映射关系**; 那么对于这GPU构成的索引部分，`threadIdx` 属于在 block 内的局部索引(在不同的block内相对位置是重复相同的)，而 `blockIdx` 则是属于 GPU 内的全局索引; 
 
-    <center>
+    <p align="center">
     <img src="figures/thread_block.png" width="25.9%">
     <img src="figures/2d_index.gif" width="30%">
-
+    <p align="center">
     <font color="AAAAAA">索引构成</font>
-    &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+    &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+    &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
     <font color="AAAAAA">实现效果</font>
-    </center>
+    </p>
+    </p>
 
-7. 
+7. `shared Memory` 是针对**同一个** `block` 内的 `threads` 进行性能提升，通过共享内存，减少I/O读取时间，实现高效并行处理效果;
+
+8. 对于`shared Memory`个人感觉最为重要的是:
+
+    1. 每个 `block` 的 `shared Memory` 的内容都是各自独立的，相互之间不能访问;
+    2. 每个 `block` 的 `shared Memory` 在并行计算时，负责的内容都是什么;
+
+    3. `__syncthreads()` 的作用是什么？深入理解它的机制;
+        1. `__syncthreads()` 从功能上是确保在cache内存内在执行下一步前，cache内所有与**改变内容相关的命令都**已经执行完毕; 因为各线程内由于各自的逻辑判断结果可能不一致，导致在同一时间时，各自在相同程序上执行的行数不一致，即会有不同执行 `branch`; 为了确保大家一起执行完这部分工作，让 GPU **各线程**都看到自己对应的 `__syncthreads()` 后，再一起向下执行，也就是说在cache内只要有线程 a 还没到`__syncthreads()`，其余已经执行完毕的线程都必须等线程 a ;
+        2. `__syncthreads()` 设置的位置非常有讲究; 根据3.1中提到的特性；如果不设置`__syncthreads()`，可能会导致，在cache内的某些线程计算量大，没算完，就被匆匆忙忙结束，导致计算结果错误；如果`__syncthreads()`位置放错，例如有的线程不可能看到自己的 `__syncthreads()`，就导致 GPU 一直处于中断状态;
+
+9. 具体详见 [VectorMulit.cu](../Source%20Code%20of%20CUDA%20by%20Examples/chapter_5/VectorMulit.cu) , 针对第一个，简单解释一下这里的向量乘法部分, 便于理解;
+    <p align="center">
+    <img src="figures/share_memory.png" width="80%">
+    </p>
+    <p align="center">
+    <img src="figures/share_memory_1.png" width="80%">
+    </p>
+
+10. 具体详见 [syn_not.cu](../Source%20Code%20of%20CUDA%20by%20Examples/chapter_5/syn_not.cu), 是否使用 `__syncthreads()` 带来的效果差异;
+
+    <p align="center">
+    <img src="figures/syn.png" width="30%">
+    <img src="figures/syn_not.png" width="30%">
+    <p align="center">
+    <font color="AAAAAA">无 __syncthreads() </font>
+    &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+    <font color="AAAAAA">有 __syncthreads()</font>
+    </p>
+    </p>
