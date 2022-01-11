@@ -54,17 +54,13 @@
 
 6. p71; 对于二维的 block 划分，二维 threads 块的划分，索引的部分依旧是一样的，无非是在GPU上由`threadIdx` 和 `blockIdx` 构成的索引要能够和**输入的数据**索引形成**唯一的一一映射关系**; 那么对于这GPU构成的索引部分，`threadIdx` 属于在 block 内的局部索引(在不同的block内相对位置是重复相同的)，而 `blockIdx` 则是属于 GPU 内的全局索引; 
 
-<center>
-    <img src="figures/thread_block.png" width="25%">
-    &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
-    <img src="figures/2d_index.gif" width="29.1%">
-    <br/>
-    <font color="AAAAAA">索引组成</font>
-    &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
-    &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
-    &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+    <center>
+    <img src="figures/thread_block.png" width="25.9%">
+    <img src="figures/2d_index.gif" width="30%">
+
+    <font color="AAAAAA">索引构成</font>
+    &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
     <font color="AAAAAA">实现效果</font>
-</center>
-<br/>
+    </center>
 
 7. 
