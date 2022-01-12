@@ -95,3 +95,9 @@
     <font color="AAAAAA">有 __syncthreads()</font>
     </p>
     </p>
+
+# Chapter 6
+
+1. 引入 `constant memory` 以及 `CUDA events` 概念; `constant memory` 是介于 `global memory` 和 `shared memory` 之间的产物，一方面解决 `shared memory` 存在只限于单个 `block` 中的问题， 另一方面解决多计算单元访问 `global memory` 带来的带宽负担;
+
+2. p96; 引入 `ray tracing` 光线追踪概念; 这里做一个简单的沿 z 轴的光线追踪，来理解 `constant memory` 带来的性能提升;
