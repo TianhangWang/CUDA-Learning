@@ -1,5 +1,5 @@
 #include <iostream>
-#include "cpu_anim.h"
+#include "..depend/cpu_anim.h"
 #define DIM 512
 
 struct DataBlock{

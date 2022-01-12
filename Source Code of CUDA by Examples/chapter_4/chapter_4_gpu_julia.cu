@@ -1,4 +1,4 @@
-#include "cpu_bitmap.h"
+#include "../depend/cpu_bitmap.h"
 #include <iostream>
 #include <chrono>
 #define DIM 512

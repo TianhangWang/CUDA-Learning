@@ -1,6 +1,6 @@
 #include <iostream>
 #include <stdlib.h>
-#include "cpu_bitmap.h"
+#include "../depend/cpu_bitmap.h"
 #define INF 2e10f
 #define SPHERES 50
 #define DIM  512
